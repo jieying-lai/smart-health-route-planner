@@ -1,64 +1,65 @@
-# AWhere? - SDG 3 Smart City Health Companion
+<div align="center">
 
-**AWhere?** is a cutting-edge smart city application developed for all citizens in Malaysia. Our mission is to promote **Good Health and Well-being** by empowering urban residents with real-time environmental data and health-conscious navigation tools.
+  # 🌿 AWhere? — SDG 3 Smart City Health Companion
+  
+  **An intelligent, health-conscious urban navigation web application tailored for Malaysian citizens.**
 
-## Problem Statement
+  [![Vanilla JS](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#)
+  [![Leaflet](https://img.shields.io/badge/Leaflet-1.9+-199900?style=flat-square&logo=leaflet&logoColor=white)](#)
+  [![UN SDG 3](https://img.shields.io/badge/UN%20SDG-3%20Good%20Health-4C9F38?style=flat-square)](#)
+  [![Status](https://img.shields.io/badge/Project%20Status-Complete-brightgreen?style=flat-square)](#)
 
-In rapidly growing urban environments, citizens are constantly exposed to invisible health hazards like air pollution, extreme weather in Malaysia, and lack of real-time alerts. Vulnerable groups (children, elderly, and those with respiratory issues) are particularly at risk, yet they lack a unified tool to navigate their city safely.
+</div>
 
-## Our Solution
+---
 
-AWhere? bridges this gap by integrating real-time environmental data with smart routing. Unlike standard navigation apps that prioritize speed, AWhere? prioritizes your health. We help users avoid hazardous zones, find the cleanest air routes, and access medical help instantly.
+## 📌 Problem Statement
 
-## Key Features
+In rapidly growing urban environments, citizens are constantly exposed to invisible health hazards like ambient air pollution (such as PM2.5), localized haze, sudden tropical thunderstorms, and extreme weather conditions in Malaysia. 
 
-- Route Planning\*\*:
-  - Pedestrians/Cyclists: Routes that avoid high pollution zones and heavy traffic.
-  - Drivers: Alerts for heavy rain and hazardous road conditions.
-- Environmental Monitoring: Visual heatmap of AQI levels to help you breathe easier.
-- Healthcare Features: One-tap access to the nearest medical facilities in emergencies.
-- AI Chatbot - Little Assistant: A personalized AI companion that offers health tips, route suggestions, and answers your wellness questions.
-- User Profiles - Solutions are tailored to health condition of the user
+Vulnerable groups—such as children, the elderly, outdoor pedestrians, cyclists, and individuals with respiratory sensitivities—frequently navigate daily life without real-time, localized risk awareness. Conventional navigation solutions exclusively prioritize the shortest distance or fastest travel time, offering little to no protection against environmental health hazards.
 
-## Tech Stack
+---
 
-- Frontend: HTML5, CSS3, JavaScript (Vanilla ES6+)
-- Mapping Engine: [Leaflet.js](https://leafletjs.com/)
-- Data Powerhouses:
-  - Open-Meteo (Weather Intelligence)
-  - WAQI (Air Quality Index)
-  - LocationIQ (Geocoding & POIs)
-  - OpenRouteService (Smart Routing)
-- Design: Modern UI with Glassmorphism effects, powered by [Google Fonts](https://fonts.google.com/).
+## 💡 Our Solution
 
-## Getting Started
+**AWhere?** bridges the gap between environmental monitoring and daily transit. By integrating real-time environmental APIs with an interactive mapping engine, the platform shifts the routing paradigm: **we prioritize human health over pure speed**.
+
+The platform empowers urban residents to:
+- Actively steer clear of polluted choke points, industrial corridors, and heavy traffic zones.
+- Access live weather intelligence and air quality overlays across interactive maps.
+- Locate nearby healthcare services and emergency medical facilities with a single tap.
+- Receive tailored health tips and dynamic routing advice powered by an embedded AI wellness companion.
+
+---
+
+## ✨ Key Features
+
+* 🗺️ **Health-Conscious Route Planning**:
+  * **Pedestrians & Cyclists**: Intelligent alternative pathways that circumvent severe pollution clusters and congested roadways.
+  * **Drivers**: Proactive hazard warnings for localized torrential downpours, low visibility, and weather disruptions.
+* 🌫️ **Real-Time Environmental Monitoring**: Visual interactive heatmaps displaying localized Air Quality Index (AQI) levels to support informed outdoor mobility.
+* 🏥 **Rapid Healthcare Access**: Integrated proximity routing to find and navigate to nearby clinics, pharmacies, and hospitals during emergencies.
+* 🤖 **AI Assistant ("Little Assistant")**: A built-in AI companion providing contextual health recommendations, weather advisories, and wellness answers.
+* 👤 **Personalized Health Profiles**: Customizes routing sensitivity and environmental alerts according to user-specific health considerations.
+
+---
+
+## 🛠️ Tech Stack & System Architecture
+* **Core Frontend**: HTML5, Modern CSS3 (Glassmorphism design system), Vanilla JavaScript (Modular ES6+)
+* **Interactive Mapping**: [Leaflet.js](https://leafletjs.com/)
+* **External APIs & Services**:
+  * **Weather Intelligence**: [Open-Meteo API](https://open-meteo.com/)
+  * **Air Pollution Data**: [World Air Quality Index (WAQI) Project](https://aqicn.org/)
+  * **Geocoding & POIs**: [LocationIQ](https://locationiq.com/)
+  * **Routing & Directions**: [OpenRouteService](https://openrouteservice.org/)
+* **Typography & UI Elements**: [Google Fonts](https://fonts.google.com/)
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Python 3.x (recommended for local server)
-- A modern web browser (Chrome, Firefox, Edge)
-
-### Configuration
-
-This submission comes **pre-configured with demo API keys** so you can test the application immediately without any setup.
-
-However, for a production environment or if you wish to use your own quotas, you can update the keys as follows:
-
-1.  WAQI (Air Quality):
-    - Get a free token from [WAQI API](https://aqicn.org/data-platform/token/).
-    - Update `js/services/DataService.js`: `this.waqiApiKey = 'YOUR_KEY'`
-2.  LocationIQ (Geocoding):
-    - Sign up at [LocationIQ](https://locationiq.com/).
-    - Update `js/services/DataService.js`: `this.locationIqKey = 'YOUR_KEY'`
-3.  OpenRouteService (Routing):
-    - Get a key from [OpenRouteService](https://openrouteservice.org/).
-    - Update `js/services/RouteService.js`: `this.apiKey = 'YOUR_KEY'`
-
-### Running the App
-
-The Easy Way (Windows)
-Simply double-click the `start_server.bat` file in the root directory. It will launch a local server and open the app in your browser automatically.
-
-## Team
-
-Built with ❤️ by Jet2Holiday.
+* A modern web browser (Google Chrome, Microsoft Edge, Mozilla Firefox, or Safari).
+* Python 3.x *(recommended for hosting a local development server)*.
