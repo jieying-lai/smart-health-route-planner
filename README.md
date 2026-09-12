@@ -1,65 +1,61 @@
 <div align="center">
 
-  # 🌿 AWhere? [Smart City Health Companion]
-  
-  **An intelligent, health-conscious urban navigation web application tailored for Malaysian citizens.**
+  # 🌿 AWhere? — AI-Driven Healthy City Route Planner
+  ### 🏆 Developed for SDG XI Hackathon 2025 | Healthy Cities Track (SDG 3)
 
-  [![Vanilla JS](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#)
-  [![Leaflet](https://img.shields.io/badge/Leaflet-1.9+-199900?style=flat-square&logo=leaflet&logoColor=white)](#)
-  [![UN SDG 3](https://img.shields.io/badge/UN%20SDG-3%20Good%20Health-4C9F38?style=flat-square)](#)
-  [![Status](https://img.shields.io/badge/Project%20Status-Complete-brightgreen?style=flat-square)](#)
+  **A smart urban mobility platform mapping real-time environmental data with AI-assisted routing to safeguard vulnerable city residents.**
+
+  [![Hackathon](https://img.shields.io/badge/Event-SDG%20XI%20Hackathon%202025-blue?style=flat-square)](#)
+  [![Track](https://img.shields.io/badge/Track-Healthy%20Cities%20(SDG%203)-4C9F38?style=flat-square)](#)
+  [![Prototype](https://img.shields.io/badge/Solution-Pollution--Aware%20Planner-orange?style=flat-square)](#)
+  [![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)](#)
 
 </div>
 
 ---
 
-## 📌 Problem Statement
+## 📌 Problem Statement & Context
 
-In rapidly growing urban environments, citizens are constantly exposed to invisible health hazards like ambient air pollution (such as PM2.5), localized haze, sudden tropical thunderstorms, and extreme weather conditions in Malaysia. 
+In rapidly urbanizing centers across Malaysia, residents face escalating health vulnerabilities driven by hazardous air pollutants (PM2.5, $\text{CO}_2$, $\text{NO}_2$), heavy traffic congestion, and erratic tropical weather. 
 
-Vulnerable groups—such as children, the elderly, outdoor pedestrians, cyclists, and individuals with respiratory sensitivities—frequently navigate daily life without real-time, localized risk awareness. Conventional navigation solutions exclusively prioritize the shortest distance or fastest travel time, offering little to no protection against environmental health hazards.
+While conventional routing engines prioritize the shortest physical travel time, they inadvertently direct vulnerable urban commuters—such as children, seniors, cyclists, and individuals with chronic respiratory issues—straight through high-risk pollution choke points.
 
 ---
 
-## 💡 Our Solution
+## 💡 The Solution: AWhere?
 
-**AWhere?** bridges the gap between environmental monitoring and daily transit. By integrating real-time environmental APIs with an interactive mapping engine, the platform shifts the routing paradigm: **we prioritize human health over pure speed**.
+Engineered for the **SDG XI Hackathon 2025 Healthy Cities Track**, **AWhere?** implements a **Pollution-Aware Route Planner & Smart Healthcare Access Platform**. 
 
-The platform empowers urban residents to:
-- Actively steer clear of polluted choke points, industrial corridors, and heavy traffic zones.
-- Access live weather intelligence and air quality overlays across interactive maps.
-- Locate nearby healthcare services and emergency medical facilities with a single tap.
-- Receive tailored health tips and dynamic routing advice powered by an embedded AI wellness companion.
+The system directly addresses the three core hackathon subtopics:
+1. **Air Quality & Health Risks**: Maps environmental pollution levels to spatial zones, steering commuters clear of hazard areas.
+2. **Traffic & Environmental Stress**: Re-routes active commuters away from severe traffic congestion and weather hazards.
+3. **Smart Healthcare Access**: Surfaces real-time spatial routes to nearby clinics, pharmacies, and hospitals during emergencies.
 
 ---
 
 ## ✨ Key Features
 
-* 🗺️ **Health-Conscious Route Planning**:
-  * **Pedestrians & Cyclists**: Intelligent alternative pathways that circumvent severe pollution clusters and congested roadways.
-  * **Drivers**: Proactive hazard warnings for localized torrential downpours, low visibility, and weather disruptions.
-* 🌫️ **Real-Time Environmental Monitoring**: Visual interactive heatmaps displaying localized Air Quality Index (AQI) levels to support informed outdoor mobility.
-* 🏥 **Rapid Healthcare Access**: Integrated proximity routing to find and navigate to nearby clinics, pharmacies, and hospitals during emergencies.
-* 🤖 **AI Assistant ("Little Assistant")**: A built-in AI companion providing contextual health recommendations, weather advisories, and wellness answers.
-* 👤 **Personalized Health Profiles**: Customizes routing sensitivity and environmental alerts according to user-specific health considerations.
+* 🗺️ **Pollution-Aware & Health-First Routing**:
+  * Calculates dynamically weighted routes that avoid dense air pollution and major traffic bottlenecks.
+  * Offers separate transit profiles for pedestrians/cyclists and drivers.
+* 🌫️ **Spatial Air Quality Overlay**: Interactive heatmaps visualizing ambient Air Quality Index (AQI) values across city coordinates.
+* 🏥 **One-Tap Emergency Medical Access**: Instant POI query providing optimized paths to the nearest medical facilities.
+* 🤖 **AI Health Assistant ("Little Assistant")**: Contextual conversational agent providing wellness guidance, outdoor risk advisories, and weather warnings.
+* 👤 **Custom Health Profiles**: Dynamic routing parameters that adapt to personal sensitivities (e.g., asthma, cardiac conditions).
 
 ---
 
-## 🛠️ Tech Stack & System Architecture
-* **Core Frontend**: HTML5, Modern CSS3 (Glassmorphism design system), Vanilla JavaScript (Modular ES6+)
-* **Interactive Mapping**: [Leaflet.js](https://leafletjs.com/)
-* **External APIs & Services**:
-  * **Weather Intelligence**: [Open-Meteo API](https://open-meteo.com/)
-  * **Air Pollution Data**: [World Air Quality Index (WAQI) Project](https://aqicn.org/)
-  * **Geocoding & POIs**: [LocationIQ](https://locationiq.com/)
-  * **Routing & Directions**: [OpenRouteService](https://openrouteservice.org/)
-* **Typography & UI Elements**: [Google Fonts](https://fonts.google.com/)
+## 🏗️ System Architecture & Data Orchestration
 
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-* A modern web browser (Google Chrome, Microsoft Edge, Mozilla Firefox, or Safari).
-* Python 3.x *(recommended for hosting a local development server)*.
+```text
+[ Data & API Sources ]
+├── WAQI / OpenAQ Platform       ──> Real-Time Air Quality Data (PM2.5)
+├── Open-Meteo API               ──> Real-Time Weather Intelligence
+├── OpenStreetMap / LocationIQ   ──> Geocoding & Medical POI Discovery
+└── OpenRouteService Engine      ──> Dynamic Health-Weighted Routing
+                 │
+                 ▼
+     [ Core Application Engine ] (Vanilla JS ES6+ / Glassmorphism UI)
+                 │
+                 ▼
+     [ Leaflet.js Interactive Map Interface & AI Assistant ]
