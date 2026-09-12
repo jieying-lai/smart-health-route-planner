@@ -1,6 +1,6 @@
 <div align="center">
 
-  # 🌿 AWhere? — AI-Driven Healthy City Route Planner
+  # 🌿 AWhere? AI-Driven Healthy City Route Planner
   ### 🏆 Developed for SDG XI Hackathon 2025 | Healthy Cities Track (SDG 3)
 
   **A smart urban mobility platform mapping real-time environmental data with AI-assisted routing to safeguard vulnerable city residents.**
