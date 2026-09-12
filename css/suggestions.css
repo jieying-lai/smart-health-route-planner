@@ -1,0 +1,31 @@
+/* Suggestion Button Styles */
+.suggestion-btn {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(99, 102, 241, 0.2));
+    border: 1px solid var(--primary-color);
+    color: var(--text-light);
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 500;
+}
+
+.suggestion-btn:hover {
+    background: linear-gradient(135deg, var(--primary-color), #6366F1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.suggestion-btn:active {
+    transform: translateY(0);
+}
+
+.suggestion-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}

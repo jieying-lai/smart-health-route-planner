@@ -1,0 +1,116 @@
+/* Eye Emotion States */
+.eye.blink {
+    border-radius: 50% 50% 0 0;
+    background: #F43F5E;
+}
+
+.eye.love {
+    background: transparent;
+    box-shadow: none;
+    font-size: 10px;
+    width: 12px;
+    height: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.eye.happy {
+    border-radius: 50% 50% 0 0;
+    height: 6px;
+    background: #10B981;
+}
+
+.eye.angry {
+    height: 4px;
+    width: 12px;
+    border-radius: 2px;
+    background: #EF4444;
+    transform: rotate(15deg);
+}
+
+.eye.wink {
+    height: 2px !important;
+    width: 10px !important;
+    border-radius: 0 !important;
+}
+
+.eye.surprised {
+    height: 14px;
+    width: 14px;
+    background: #fff;
+    border: 3px solid #00BFA6;
+    border-radius: 50%;
+}
+
+.eye.confused {
+    height: 12px;
+    width: 12px;
+    border-radius: 2px;
+}
+
+.eye.confused.left {
+    transform: translateY(-3px);
+}
+
+.eye.confused.right {
+    transform: translateY(3px);
+}
+
+.eye.dead {
+    background: transparent;
+    box-shadow: none;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #EF4444;
+}
+
+.eye.cool {
+    background: #111;
+    width: 16px;
+    height: 8px;
+    border-radius: 0;
+}
+
+.eye.cry {
+    background: #3B82F6;
+    height: 8px;
+    width: 8px;
+    border-radius: 50%;
+    box-shadow: 0 4px 0 #3B82F6;
+    animation: pulse 1s infinite;
+}
+
+.eye.smile {
+    border-radius: 0 0 50% 50%;
+    height: 6px;
+    background: transparent;
+    border-bottom: 3px solid #10B981;
+    box-shadow: none;
+}
+
+.eye.sleep {
+    height: 2px;
+    width: 12px;
+    background: #cbd5e1;
+    box-shadow: none;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+.bounce {
+    animation: bounce 0.5s ease-in-out 2;
+}

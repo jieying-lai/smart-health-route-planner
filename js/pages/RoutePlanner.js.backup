@@ -1,0 +1,403 @@
+window.App = window.App || {};
+
+window.App.RoutePlanner = function () {
+    const container = document.createElement('div');
+    container.className = 'container fade-in';
+    const apiKey = 'pk.450e8cc609ea4f382ea5b9673fd7a5a8';
+
+    container.innerHTML = `
+        <h1>Best Route</h1>
+        
+        <div class="card">
+            <h2>Plan Your Journey</h2>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--text-dim);">Start Location</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="start-input" placeholder="Detecting location..." style="margin-bottom: 0;" />
+                    <button id="locate-btn" class="btn btn-primary" style="padding: 14px;">📍</button>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--text-dim);">Destination</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="search-input" placeholder="Search destination..." style="margin-bottom: 0;" />
+                    <button id="search-btn" class="btn btn-primary" style="padding: 14px;">🔍</button>
+                </div>
+            </div>
+            
+            <div id="search-results" style="margin-top: 10px; max-height: 150px; overflow-y: auto; display: none; background: rgba(0,0,0,0.5); border-radius: 8px;"></div>
+            
+            <div style="margin-top: 20px; border-top: 1px solid var(--glass-border); padding-top: 15px;">
+                <label style="display: block; margin-bottom: 10px; font-size: 0.9rem; color: var(--text-dim);">Quick Suggestions Near You</label>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    <button class="suggestion-btn" data-category="food_court">🍽️ Food Court</button>
+                    <button class="suggestion-btn" data-category="shopping_mall">🛍️ Mall</button>
+                    <button class="suggestion-btn" data-category="restaurant">🍴 Restaurant</button>
+                    <button class="suggestion-btn" data-category="cafe">☕ Cafe</button>
+                    <button class="suggestion-btn" data-category="park">🌳 Park</button>
+                    <button class="suggestion-btn" data-category="hospital">🏥 Hospital</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="height: 400px; position: relative; overflow: hidden; padding: 0;">
+             <!-- Real Map -->
+            <div id="route-map" style="width: 100%; height: 100%; background: #1e293b;"></div>
+        </div>
+
+        <h3 style="margin-top: 25px; margin-bottom: 15px;">📍 Nearby Places</h3>
+        <div id="nearby-places"></div>
+    `;
+
+    setTimeout(() => {
+        if (window.L) {
+            try {
+                const map = L.map(container.querySelector('#route-map')).setView([3.1390, 101.6869], 13); // KL Coordinates
+
+                // LocationIQ Tiles
+                L.tileLayer(`https://{s}-tiles.locationiq.com/v3/streets/r/{z}/{x}/{y}.png?key=${apiKey}`, {
+                    attribution: '&copy; LocationIQ &copy; OpenStreetMap contributors',
+                    maxZoom: 18
+                }).addTo(map);
+
+                const startInput = container.querySelector('#start-input');
+                const locateBtn = container.querySelector('#locate-btn');
+                let userMarker = null;
+                let destMarker = null;
+
+                // Function to Reverse Geocode
+                const reverseGeocode = async (lat, lon) => {
+                    try {
+                        startInput.value = "Fetching address...";
+                        const response = await fetch(`https://us1.locationiq.com/v1/reverse.php?key=${apiKey}&lat=${lat}&lon=${lon}&format=json`);
+                        const data = await response.json();
+                        if (data && data.display_name) {
+                            startInput.value = data.display_name;
+                        } else {
+                            startInput.value = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+                        }
+                    } catch (error) {
+                        console.error("Reverse geocoding failed", error);
+                        startInput.value = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+                    }
+                };
+
+                // Use Global Location Service
+                window.getLocation().then(coords => {
+                    if (userMarker) map.removeLayer(userMarker);
+                    map.setView([coords.lat, coords.lon], 14);
+                    userMarker = L.marker([coords.lat, coords.lon]).addTo(map).bindPopup("You are here").openPopup();
+                    reverseGeocode(coords.lat, coords.lon);
+                }).catch(error => {
+                    console.error('Location service error:', error);
+                    startInput.placeholder = "Location unavailable. Type manually.";
+                });
+
+                locateBtn.addEventListener('click', () => {
+                    window.getLocation().then(coords => {
+                        if (userMarker) map.removeLayer(userMarker);
+                        map.setView([coords.lat, coords.lon], 14);
+                        userMarker = L.marker([coords.lat, coords.lon]).addTo(map).bindPopup("You are here").openPopup();
+                        reverseGeocode(coords.lat, coords.lon);
+                    });
+                });
+
+                // Search Functionality (Destination)
+                const searchBtn = container.querySelector('#search-btn');
+                const searchInput = container.querySelector('#search-input');
+                const resultsContainer = container.querySelector('#search-results');
+
+                const performSearch = async () => {
+                    const query = searchInput.value;
+                    if (!query) return;
+
+                    try {
+                        // Get user's current location for proximity bias
+                        let searchUrl = `https://us1.locationiq.com/v1/search.php?key=${apiKey}&q=${encodeURIComponent(query)}&format=json&countrycodes=my`;
+
+                        // Add proximity bias if user location is available
+                        if (userMarker) {
+                            const userPos = userMarker.getLatLng();
+                            // Create a bounding box around user (approx 50km radius)
+                            const delta = 0.5; // ~50km
+                            const viewbox = `${userPos.lng - delta},${userPos.lat + delta},${userPos.lng + delta},${userPos.lat - delta}`;
+                            searchUrl += `&viewbox=${viewbox}&bounded=1`;
+                        }
+
+                        const response = await fetch(searchUrl);
+                        const data = await response.json();
+
+                        resultsContainer.innerHTML = '';
+                        resultsContainer.style.display = 'block';
+
+                        if (Array.isArray(data)) {
+                            // Sort by distance from user if location available
+                            let sortedData = data;
+                            if (userMarker) {
+                                const userPos = userMarker.getLatLng();
+                                sortedData = data.sort((a, b) => {
+                                    const distA = Math.sqrt(Math.pow(a.lat - userPos.lat, 2) + Math.pow(a.lon - userPos.lng, 2));
+                                    const distB = Math.sqrt(Math.pow(b.lat - userPos.lat, 2) + Math.pow(b.lon - userPos.lng, 2));
+                                    return distA - distB;
+                                });
+                            }
+
+                            sortedData.slice(0, 5).forEach((place, index) => {
+                                const item = document.createElement('div');
+                                item.style.padding = '10px';
+                                item.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+                                item.style.cursor = 'pointer';
+
+                                // Calculate distance if user location available
+                                let distanceText = '';
+                                if (userMarker) {
+                                    const userPos = userMarker.getLatLng();
+                                    const R = 6371; // Earth radius in km
+                                    const dLat = (place.lat - userPos.lat) * Math.PI / 180;
+                                    const dLon = (place.lon - userPos.lng) * Math.PI / 180;
+                                    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                                        Math.cos(userPos.lat * Math.PI / 180) * Math.cos(place.lat * Math.PI / 180) *
+                                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                                    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                                    const distance = R * c;
+                                    distanceText = ` (${distance < 1 ? (distance * 1000).toFixed(0) + 'm' : distance.toFixed(1) + 'km'} away)`;
+                                }
+
+                                item.innerHTML = `
+                                    <div style="font-weight: 500;">${place.display_name.split(',')[0]}</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-dim); margin-top: 2px;">
+                                        ${place.display_name.split(',').slice(1, 3).join(',')}${distanceText}
+                                    </div>
+                                `;
+
+                                item.addEventListener('click', () => {
+                                    const lat = parseFloat(place.lat);
+                                    const lon = parseFloat(place.lon);
+
+                                    if (destMarker) map.removeLayer(destMarker);
+                                    destMarker = L.marker([lat, lon]).addTo(map).bindPopup(place.display_name).openPopup();
+                                    map.setView([lat, lon], 15);
+
+                                    resultsContainer.style.display = 'none';
+                                    searchInput.value = place.display_name;
+                                });
+
+                                resultsContainer.appendChild(item);
+                            });
+                        }
+                    } catch (error) {
+                        console.error("Search failed", error);
+                    }
+                };
+
+                // Route Calculation
+                const routeBtn = document.createElement('button');
+                routeBtn.className = 'btn btn-primary';
+                routeBtn.style.width = '100%';
+                routeBtn.style.marginTop = '15px';
+                routeBtn.innerHTML = '🚗 Get Best Route';
+                container.querySelector('.card').appendChild(routeBtn);
+
+                let routeLayer = null;
+
+                const calculateRoute = async () => {
+                    if (!userMarker || !destMarker) {
+                        alert("Please set both Start Location and Destination.");
+                        return;
+                    }
+
+                    const start = userMarker.getLatLng();
+                    const dest = destMarker.getLatLng();
+
+                    routeBtn.innerHTML = 'Calculating...';
+                    routeBtn.disabled = true;
+
+                    try {
+                        const routeData = await window.RouteService.fetchRoute(start, dest);
+                        const routes = routeData.routes;
+
+                        if (routes && routes.length > 0) {
+                            // AI Analysis
+                            const analyzeRoutesWithAI = async () => {
+                                try {
+                                    const weather = await window.DataService.getWeather(start.lat, start.lon);
+                                    const pollution = await window.DataService.getPollution(start.lat, start.lon);
+                                    const hour = new Date().getHours();
+
+                                    const routeSummary = routes.map((r, i) => `Route ${i + 1}: ${(r.distance / 1000).toFixed(1)}km, ${(r.duration / 60).toFixed(0)}min`).join('\n');
+
+                                    const prompt = `Analyze routes:
+${routeSummary}
+
+Weather: ${weather.temp}°C, ${weather.desc}
+Air: AQI ${pollution.aqi}
+Time: ${hour}:00
+
+For each route give insight (max 8 words) and warning (or "none").
+Recommend best route number.
+
+JSON format:
+{"routes":[{"insight":"Fastest route","warning":"none"}],"recommended":1,"reason":"Route 1 fastest, good air","mood":"happy"}`;
+
+                                    const response = await fetch('https://api.jamaibase.com/api/v1/chat/completions', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Authorization': 'Bearer jamai_pat_fcc821f53ee8e94560c4ea16f6f522702ad1fa959344d576',
+                                            'Content-Type': 'application/json',
+                                            'X-Project-ID': 'proj_8074cdfcfe8657ff8d03b1e8'
+                                        },
+                                        body: JSON.stringify({
+                                            model: "ellm/gemini-2.5-flash",
+                                            messages: [
+                                                { role: "system", content: "You are a route advisor. Respond with valid JSON only." },
+                                                { role: "user", content: prompt }
+                                            ],
+                                            max_tokens: 250,
+                                            temperature: 0.7
+                                        })
+                                    });
+
+                                    const data = await response.json();
+                                    const content = data.choices[0].message.content;
+                                    const jsonMatch = content.match(/\{[\s\S]*\}/);
+                                    return jsonMatch ? JSON.parse(jsonMatch[0]) : null;
+                                } catch (e) {
+                                    console.warn("AI analysis failed:", e);
+                                    return null;
+                                }
+                            };
+
+                            const aiAnalysis = await analyzeRoutesWithAI();
+                            let selectedRouteIndex = aiAnalysis ? (aiAnalysis.recommended - 1) : 0;
+
+                            const renderRoutes = () => {
+                                if (routeLayer) {
+                                    if (routeLayer instanceof L.LayerGroup) {
+                                        routeLayer.clearLayers();
+                                    } else {
+                                        map.removeLayer(routeLayer);
+                                    }
+                                }
+                                routeLayer = L.layerGroup().addTo(map);
+
+                                routes.forEach((route, index) => {
+                                    const isSelected = index === selectedRouteIndex;
+                                    const style = isSelected
+                                        ? { color: '#3B82F6', weight: 6, opacity: 0.9, zIndex: 1000 }
+                                        : { color: '#94a3b8', weight: 4, opacity: 0.5, dashArray: '5, 10' };
+
+                                    const layer = L.geoJSON(route.geometry, { style }).addTo(routeLayer);
+                                    layer.on('click', () => {
+                                        if (selectedRouteIndex !== index) {
+                                            selectedRouteIndex = index;
+                                            renderRoutes();
+                                        }
+                                    });
+                                    if (isSelected) layer.bringToFront();
+                                });
+
+                                const selectedRoute = routes[selectedRouteIndex];
+                                const distance = (selectedRoute.distance / 1000).toFixed(1);
+                                const duration = (selectedRoute.duration / 60).toFixed(0);
+
+                                let infoHTML = '';
+
+                                if (aiAnalysis) {
+                                    infoHTML += `<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                                        <strong>🤖 AI Recommendation:</strong><br>${aiAnalysis.reason}
+                                    </div>`;
+                                }
+
+                                infoHTML += '<div style="display: flex; flex-direction: column; gap: 8px;">';
+
+                                routes.forEach((route, index) => {
+                                    const dist = (route.distance / 1000).toFixed(1);
+                                    const dur = (route.duration / 60).toFixed(0);
+                                    const isSelected = index === selectedRouteIndex;
+                                    const isRecommended = aiAnalysis && index === (aiAnalysis.recommended - 1);
+                                    const routeInfo = aiAnalysis ? aiAnalysis.routes[index] : null;
+
+                                    const bgColor = isSelected ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 255, 255, 0.05)';
+                                    const borderColor = isSelected ? '#3B82F6' : '#e5e7eb';
+
+                                    infoHTML += `<div onclick="window.selectRoute(${index})" style="padding: 10px; background: ${bgColor}; border: 2px solid ${borderColor}; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <div>
+                                                <strong>${isRecommended ? '⭐ ' : ''}Route ${index + 1}${isRecommended ? ' (Recommended)' : ''}</strong>
+                                                <div style="font-size: 0.85rem; color: var(--text-dim); margin-top: 2px;">${dist} km • ${dur} mins</div>
+                                            </div>
+                                            ${isSelected ? '<span style="color: #3B82F6; font-size: 1.2rem;">✓</span>' : ''}
+                                        </div>
+                                        ${routeInfo ? `<div style="margin-top: 6px; font-size: 0.8rem; font-style: italic;">
+                                            ${routeInfo.warning !== 'none' ? '⚠️ ' : '💡 '}${routeInfo.insight}
+                                            ${routeInfo.warning !== 'none' ? '<br><span style="color: #f59e0b;">⚠️ ' + routeInfo.warning + '</span>' : ''}
+                                        </div>` : ''}
+                                    </div>`;
+                                });
+
+                                infoHTML += '</div>';
+
+                                const infoDiv = document.createElement('div');
+                                infoDiv.style.marginTop = '10px';
+                                infoDiv.innerHTML = infoHTML;
+
+                                const oldInfo = container.querySelector('.route-info');
+                                if (oldInfo) oldInfo.remove();
+
+                                infoDiv.className = 'route-info';
+                                container.querySelector('.card').appendChild(infoDiv);
+
+                                window.selectRoute = (index) => {
+                                    selectedRouteIndex = index;
+                                    renderRoutes();
+                                };
+
+                                if (aiAnalysis && window.assistant) {
+                                    window.assistant.say(aiAnalysis.reason);
+                                    window.assistant.setMood(aiAnalysis.mood);
+                                }
+                            };
+
+                            renderRoutes();
+                            const allRoutesGeo = L.featureGroup(routes.map(r => L.geoJSON(r.geometry)));
+                            map.fitBounds(allRoutesGeo.getBounds(), { padding: [50, 50] });
+
+                        } else {
+                            alert("No route found.");
+                            routeBtn.innerHTML = '🚗 Get Best Route';
+                        }
+
+                    } catch (error) {
+                        console.error("Route calculation failed", error);
+                        alert(`Failed to calculate route: ${error.message}`);
+                        routeBtn.innerHTML = '🚗 Get Best Route';
+                    } finally {
+                        routeBtn.disabled = false;
+                    }
+                };
+
+                routeBtn.addEventListener('click', calculateRoute);
+                searchBtn.addEventListener('click', performSearch);
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') performSearch();
+                });
+
+                // Quick Suggestions - Find Nearby Places
+                const suggestionBtns = container.querySelectorAll('.suggestion-btn');
+
+                suggestionBtns.forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const category = btn.getAttribute('data-category');
+                        const btnText = btn.textContent;
+
+
+                    } catch (e) {
+                        console.error("Map init failed", e);
+                    }
+                }
+    }, 100);
+
+    return container;
+};
