@@ -1,6 +1,6 @@
 <div align="center">
 
-  # 🌿 AWhere? — SDG 3 Smart City Health Companion
+  # 🌿 AWhere? [Smart City Health Companion]
   
   **An intelligent, health-conscious urban navigation web application tailored for Malaysian citizens.**
 
